@@ -1,0 +1,38 @@
+﻿<div class='panel panel-primary' *ngIf='albums'>
+    <div class='panel-heading' style='font-size:large'>
+        {{pageTitle + ': ' + pageTitle}}
+    </div>
+
+    <div class='panel-body'>
+        <div class='row'>
+            <div class='col-md-6'>
+                <div class='row'>
+                    <div class='col-md-3'>Title:</div>
+                    <div class='col-md-6'>{{ albums.Title }}</div>
+                </div>
+                <div class='row'>
+                    <div class='col-md-3'>Description:</div>
+                    <div class='col-md-6'>{{ albums.Description }}</div>
+                </div>
+                <div class='row'>
+                    <div class='col-md-3'>Thumbnail:</div>
+                    <div class='col-md-6'>{{ albums.Thumbnail }}</div>
+                </div>
+            </div>
+
+            <!--<div class='col-md-6'>
+                <img class='center-block img-responsive'
+                     [style.width.px]='200'
+                     [style.margin.px]='2'
+                     [src]='album.Thumbnail'
+                     [title]='album.Title'>
+            </div>-->
+        </div>
+    </div>
+
+    <div class='panel-footer'>
+        <a class='btn btn-default' (click)='onBack()' style='width:80px'>
+            <i class='glyphicon glyphicon-chevron-left'></i> Back
+        </a>
+    </div>
+</div>

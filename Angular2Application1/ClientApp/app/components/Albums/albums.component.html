@@ -1,0 +1,26 @@
+﻿<h1>Albums check</h1>
+<p *ngIf="!albums"><em>Loading...</em></p>
+<div>
+    <h3>Album info for:  {{ pageTitle }}</h3>
+    <div class='has-error' *ngIf='errorMessage'>{{errorMessage}}</div>
+
+    <table class="table table-bordered table-striped" > <!--*ngIf='albums && albums.length'--> 
+        <thead>
+            <tr>
+                <th></th>
+                <th>Album Title</th>
+                <th>Album Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor='let album of albums'>
+                <td>
+                    <a class="btn btn-primary" [routerLink]="['/album', album.Id]"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>Edit Album</a>
+                    <!--<a class='btn btn-primary' (click)='onEdit()' style='width:80px'><i class='fa fa-pencil-square-o'></i> Edit</a>-->
+                </td>
+                <td>{{ album.Title }}</td>
+                <td>{{ album.Description }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

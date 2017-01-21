@@ -1,5 +1,5 @@
 ﻿import { Injectable } from "@angular/core";
-import { Http, Response } from "@angular/http";
+import { Http, Response, Headers, RequestOptions } from "@angular/http";
 
 import "rxjs/add/operator/map";
 import "rxjs/add/operator/do";
@@ -27,7 +27,17 @@ export class AlbumsService {
     getAlbum(id: number): Observable<Album> {
         return this.getAlbums()
             .map((albums: Album[]) => albums.find(a => a.Id === id))
-            .do(data => console.log('All: ' + JSON.stringify(data) + ' and this is the Description of the ID passed to album.service getAlbum' + data.Description))
+            .catch(this.handleError);
+    }
+
+    updateAlbum(album: any) {
+        let headers = new Headers({ 'Content-Type': 'application/json' });
+        let options = new RequestOptions({ headers: headers });
+        let body = JSON.stringify(album);
+
+        return this._http
+            .put(`${this._settings.albumsServiceWithApiUrl}/${album.id}`, body, options)
+            //.map((res: Response) => res.json())
             .catch(this.handleError);
     }
 

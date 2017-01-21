@@ -96,8 +96,6 @@ namespace Angular2Application1
             //    AutomaticChallenge = true
             //});
 
-            //AutoMapperConfiguration.Configure();
-
             AutoMapper.Mapper.Initialize(cfg =>
             {
                 //cfg.CreateMap<ViewModels.AlbumViewModel, Entities.Album>().ReverseMap();

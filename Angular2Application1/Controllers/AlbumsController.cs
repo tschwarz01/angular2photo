@@ -67,6 +67,8 @@ namespace Angular2Application1.Controllers
             return Ok(_albumVM);
         }
 
+
+
         [HttpGet("{page:int=0}/{pageSize=12}")]
         public async Task<IActionResult> Get(int? page, int? pageSize)
         {
@@ -116,6 +118,38 @@ namespace Angular2Application1.Controllers
 
             return new ObjectResult(pagedSet);
         }
+
+
+        [HttpPut("{id}")]
+        public IActionResult EditAlbum(int id, [FromBody] UpdateAlbumViewModel vm)
+        {
+            //Album _album = _albumRepository.GetSingle(vm.Id);
+
+            if (vm == null)
+            {
+                return BadRequest();
+            }
+
+
+            var _album = _albumRepository.GetSingle(vm.Id);
+            
+            if (_album == null)
+            {
+                return NotFound();
+            }
+
+            _album.Title = vm.Title;
+            _album.Description = vm.Description;
+            _albumRepository.Edit(_album);
+            _albumRepository.Commit();
+
+
+            return NoContent();
+
+
+        }
+
+
 
         //[Authorize(Policy = "AdminOnly")]
         [HttpPost("Create")]
@@ -201,17 +235,27 @@ namespace Angular2Application1.Controllers
 
             try
             {
+                Album _album = _albumRepository.GetSingle(id);
+
+                if (_album == null)
+                {
+                    return NotFound();
+                }
                 //if (await _authorizationService.AuthorizeAsync(User, "AdminOnly"))
                 //{
-                    Album _albumToRemove = this._albumRepository.GetSingle(id);
-                    this._albumRepository.Delete(_albumToRemove);
-                    this._albumRepository.Commit();
+                Album _albumToRemove = this._albumRepository.GetSingle(id);
+                this._albumRepository.Delete(_albumToRemove);
 
+                if (await _albumRepository.SaveChangesAsync())
+                {
                     _removeResult = new GenericResult()
                     {
                         Succeeded = true,
                         Message = $"Album removed: {_albumToRemove.Title}"
                     };
+                }
+
+                
                 //}
                 //else
                 //{

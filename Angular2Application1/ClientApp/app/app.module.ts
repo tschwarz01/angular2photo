@@ -1,8 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { UniversalModule } from 'angular2-universal';
-import { AppComponent } from './components/app/app.component'
+import { AppComponent } from './components/app/app.component';
 import { NavMenuComponent } from './components/navmenu/navmenu.component';
 import { HomeComponent } from './components/home/home.component';
 import { FetchDataComponent } from './components/fetchdata/fetchdata.component';
@@ -29,7 +30,7 @@ import { Configuration } from './components/services/config.service';
         AlbumEditComponent,
     ],
     imports: [
-        UniversalModule, // Must be first import. This automatically imports BrowserModule, HttpModule, and JsonpModule too.
+        UniversalModule,
         RouterModule.forRoot([
             { path: '', redirectTo: 'home', pathMatch: 'full' },
             { path: 'home', component: HomeComponent },
@@ -40,12 +41,12 @@ import { Configuration } from './components/services/config.service';
             { path: 'albums', component: AlbumsComponent },
             { path: 'album/:id', component: AlbumEditComponent },
             { path: '**', redirectTo: 'home' }
-        ])
+        ]),
+        ReactiveFormsModule,
     ],
     providers: [
         Configuration,
         AlbumsService
     ]
 })
-export class AppModule {
-}
+export class AppModule { }

@@ -15,7 +15,7 @@ import { Album } from './album';
 })
 
 export class AlbumEditComponent implements OnInit {
-    pageTitle: string = 'Product Detail';
+    pageTitle: string = 'Album Details';
     albumFG: FormGroup;
     albums: Album;
     _albumId: number;

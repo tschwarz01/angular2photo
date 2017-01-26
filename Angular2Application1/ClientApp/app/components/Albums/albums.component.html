@@ -1,26 +1,101 @@
-﻿<h1>Albums check</h1>
+﻿<!--<h1>Albums check</h1>
 <p *ngIf="!albums"><em>Loading...</em></p>
 <div>
     <h3>Album info for:  {{ pageTitle }}</h3>
     <div class='has-error' *ngIf='errorMessage'>{{errorMessage}}</div>
 
-    <table class="table table-bordered table-striped" > <!--*ngIf='albums && albums.length'--> 
+    <table class="table table-bordered table-striped" >
         <thead>
             <tr>
-                <th></th>
+                <th>Album ID</th>
                 <th>Album Title</th>
                 <th>Album Description</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor='let album of albums'>
+            <tr *ngFor='let album of albums let idx=index'>
+                <td *ngIf="displayRow != idx">{{ album.Id }}</td>
+                <td *ngIf="displayRow != idx">{{ album.Title }}</td>
+                <td *ngIf="displayRow != idx">{{ album.Description }}</td>
+
+                <td *ngIf="displayRow == idx"> {{album.Id}}</td>
+                <td *ngIf="displayRow == idx"> <input placeholder='Title'></td>
+                <td *ngIf="displayRow == idx"> <input placeholder='Description'></td>
                 <td>
+                    <a class="btn btn-primary" (click)=Temp(idx)><i class="fa fa-pencil-square-o" aria-hidden="true"></i>Edit Album</a>
+                    <a class="btn btn-link" (click)=Save(album.Id,newTitle,newDescription)>Save Album</a>
                     <a class="btn btn-primary" [routerLink]="['/album', album.Id]"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>Edit Album</a>
-                    <!--<a class='btn btn-primary' (click)='onEdit()' style='width:80px'><i class='fa fa-pencil-square-o'></i> Edit</a>-->
                 </td>
-                <td>{{ album.Title }}</td>
-                <td>{{ album.Description }}</td>
             </tr>
         </tbody>
     </table>
+</div>-->
+
+<div class='panel panel-primary'>
+    <div class='panel-heading'>
+        {{pageTitle}}
+    </div>
+    <!-- Filter the Products   -->
+    <div class='panel-body'>
+        <div class='row'>
+            <div class='col-md-2'>Filter by:</div>
+            <div class='col-md-4'>
+                <input type='text' [(ngModel)]='listFilter' />
+            </div>
+        </div>
+        <div class='row' *ngIf='listFilter'>
+            <div class='col-md-6'>
+                <h3>Filtered by: {{listFilter}} </h3>
+            </div>
+        </div>
+
+        <div class='has-error' *ngIf='errorMessage'>{{errorMessage}}</div>
+
+        <div class='table-responsive'>
+            <table class='table'>
+                <thead>
+                    <tr>
+                        <th>
+
+                        </th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Date Created</th>
+                        <th>Total Photos</th>
+                        <th>Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor='let album of _albums | albumFilter:listFilter'>
+                        <td>
+                            <a class="btn btn-primary" [routerLink]="['/album', album.Id]"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>Edit Album</a>
+                            <a class="btn btn-danger" (click)="delete(album)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>Delete Album</a>
+                        </td>
+                        <td>
+                            <a [routerLink]="['/album', album.Id]">
+                                {{album.Title}}
+                            </a>
+                        </td>
+                        <td>{{ album.Description }}</td>
+                        <td>{{ album.DateCreated }}</td>
+                        <td>{{ album.TotalPhotos }}</td>
+                        <td>
+                            Rating Placeholder
+                            <!--<ai-star [rating]='product.starRating'
+                                     (ratingClicked)='onRatingClicked($event)'>
+                            </ai-star>-->
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <br /><b>ngFor with inline-edit component element</b>
+            <inline-edit (notify)='onNotify($event)' template="ngFor let album of _albums" [album]="album"> </inline-edit>
+        </div>
+
+        
+
+    </div>
 </div>

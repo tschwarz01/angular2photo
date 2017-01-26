@@ -9,6 +9,7 @@ namespace Angular2Application1.ViewModels
         public string Description { get; set; }
         public string Thumbnail { get; set; }
         public DateTime DateCreated { get; set; }
+        public string SafeName { get; set; }
         public int TotalPhotos { get; set; }
     }
 }

@@ -10,5 +10,6 @@ namespace Angular2Application1.ViewModels
         public string Title { get; set; }
         public string Description { get; set; }
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
+        public string SafeName { get; set; }
     }
 }

@@ -57,7 +57,8 @@ namespace Angular2Application1.Controllers
         [HttpGet("GetOne/{id}")]
         public IActionResult GetOne(int id)
         {
-            Album _album = _albumRepository.GetSingle(id);
+            //Album _album = _albumRepository.GetSingle(a => a.Id == id, a => a.Photos);
+            Album _album = _albumRepository.GetSingle(a => a.Id == id, a => a.Photos);
             if (_album == null)
             {
                 return NotFound();

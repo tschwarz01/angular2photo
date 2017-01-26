@@ -1,0 +1,54 @@
+﻿<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="page-header">
+                Photo Gallery albums
+                <small>Page {{_page + 1}} of {{_pagesCount}}</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li>
+                    <a [routerLink]="['/home']">Home</a>
+                </li>
+                <li class="active">Albums</li>
+            </ol>
+        </div>
+    </div>
+    <!-- /.row -->
+    <div class="row album-box col-md-12" *ngFor="let album of _albums">
+        <div class="col-md-1 text-center">
+            <p>{{convertDateTime(album.DateCreated)}}</p>
+            <p><a class="btn btn-primary" [routerLink]="['/albums/:id/photos', {id: album.Id}]">&nbsp;&nbsp;View&nbsp;</a></p>
+
+        </div>
+        <div class="col-md-5">
+            <a class="fancybox" rel="gallery" href="{{album.Thumbnail}}" title="{{album.Title}}">
+                <img class="media-object img-responsive album-thumbnail" src="{{album.Thumbnail}}" alt="" />
+            </a>
+        </div>
+        
+            <!--<a class="btn btn-primary" [routerLink]="['/album', album.Id]">&nbsp;&nbsp;Edit&nbsp;&nbsp;</a>
+            <a class="btn btn-danger" (click)="delete(album)">Delete</a>-->
+            <inline-edit (notify)='onNotify($event)' [album]="album"> </inline-edit>
+        
+        <!--<hr />-->
+
+    </div>
+    <!--<hr>-->
+</div>
+
+<footer class="navbar navbar-fixed-bottom">
+    <div class="text-center">
+        <div ng-hide="(!_pagesCount || _pagesCount < 2)" style="display:inline">
+            <ul class="pagination pagination-sm">
+                <li><a *ngIf="_page != 0_" (click)="search(0)"><<</a></li>
+                <li><a *ngIf="_page != 0" (click)="search(_page-1)"><</a></li>
+                <li *ngFor="let n of range()" [ngClass]="{active: n == _page}">
+                    <a (click)="search(n)" *ngIf="n != _page">{{n+1}}</a>
+                    <span *ngIf="n == _page">{{n+1}}</span>
+                </li>
+                <li><a *ngIf="_page != (_pagesCount - 1)" (click)="search(pagePlus(1))">></a></li>
+                <li><a *ngIf="_page != (_pagesCount - 1)" (click)="search(_pagesCount - 1)">>></a></li>
+            </ul>
+        </div>
+    </div>
+</footer>

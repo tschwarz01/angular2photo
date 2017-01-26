@@ -14,6 +14,7 @@ namespace Angular2Application1.Entities
 
         public string Description { get; set; }
         public DateTime DateCreated { get; set; }
+        public string SafeName { get; set; }
         public virtual ICollection<Photo> Photos { get; set; }
     }
 }

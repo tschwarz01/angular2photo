@@ -21,11 +21,15 @@ namespace Angular2Application1
 {
     public class Startup
     {
+        
         public IHostingEnvironment _env;
         private static string _contentRootPath = string.Empty;
+        private static string _applicationPath = string.Empty;
+
         public Startup(IHostingEnvironment env)
         {
             _env = env;
+            _applicationPath = env.WebRootPath;
             _contentRootPath = env.ContentRootPath;
 
             var builder = new ConfigurationBuilder()
@@ -44,7 +48,7 @@ namespace Angular2Application1
         {
             //  Connection String to photogallery db
             //string sqlConnectionString = Configuration["ConnectionStrings:DefaultConnection"];
-            string sqlConnectionString = "Server=.;Database=photogallery;Trusted_Connection=true;MultipleActiveResultSets=True;";
+            string sqlConnectionString = "Server=.;Database=photogallery3;Trusted_Connection=true;MultipleActiveResultSets=True;";
 
             // Register Configuration as a singleton service
             services.AddSingleton(Configuration);
@@ -122,6 +126,8 @@ namespace Angular2Application1
                 //    name: "spa-fallback",
                 //    defaults: new { controller = "Home", action = "Index" });
             });
+
+            DbInitializer.Initialize(app.ApplicationServices, _applicationPath);
         }
     }
 }

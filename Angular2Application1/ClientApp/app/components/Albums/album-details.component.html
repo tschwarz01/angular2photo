@@ -1,0 +1,53 @@
+﻿<!--<div *ngIf="album">
+    <h2>{{album.title}} properties</h2>
+    <table>
+        <tr>
+            <td><span>Album ID</span></td>
+            <td>{{album.Id}}</td>
+        </tr>
+        <tr>
+            <td><label>Name: </label></td>
+            <td>
+                <input type="text" 
+                       name="albumId"
+                       placeholder="Album ID"
+                       ngModel />
+            </td>
+        </tr>
+        <tr>
+            <td><label>Type: </label></td>
+            <td><input [(ngModel)]="vehicle.type" placeholder="type" /></td>
+        </tr>
+        <tr>
+            <td><label>Mass: </label></td>
+            <td><input [(ngModel)]="vehicle.mass" placeholder="mass" /></td>
+        </tr>
+    </table>
+</div>-->
+
+<form novalidate (ngSubmit)="onSubmit(f)" #f="ngForm">
+    <div>
+        <label>
+            <span>Album ID</span>
+            <input type="text"
+                   name="Id"
+                   placeholder="The Album ID"
+                   ngModel>
+        </label>
+        <label>
+            <span>Album Title</span>
+            <input type="text"
+                   name="Title"
+                   placeholder="The Album Title"
+                   ngModel>
+        </label>
+        <label>
+            <span>Album Description</span>
+            <input type="text"
+                   name="Description"
+                   placeholder="The Album Description"
+                   ngModel>
+        </label>
+    </div>
+    <button type="submit">Submit Changes</button>
+</form>

@@ -13,20 +13,48 @@ import { Configuration } from '../services/config.service';
 @Injectable()
 export class AlbumsService {
 
-    constructor(private _http: Http,
+    public _pageSize: number;
+    public _baseUri: string;
+    _baseUrl: string = '';
+
+    constructor(private http: Http,
         private _settings: Configuration) {
+
+        this._baseUrl = _settings.getApiURI();
     }
 
+    set(baseUri: string, pageSize?: number): void {
+        this._baseUri = baseUri;
+        this._pageSize = pageSize;
+    }
+
+    get(page: number) {
+        var uri = this._baseUri + page.toString() + '/' + this._pageSize.toString();
+
+        return this.http.get(uri)
+            .map(response => (<Response>response));
+    }
+
+
+
     public getAlbums(): Observable<Album[]> {
-        return this._http.get(this._settings.albumsServiceWithApiUrl + '/GetAll')
+        return this.http.get(this._settings.albumsServiceWithApiUrl + '/GetAll')
+        //return this.http.get(this._settings.albumsServiceWithApiUrl + '/')
             .map((response: Response) => <Album[]>response.json())
             .do(data => console.log('getAlbums All: ' + JSON.stringify(data)))
             .catch(this.handleError);
     };
 
+    //getAlbum(id: number): Observable<Album> {
+    //    return this.getAlbums()
+    //        .map((albums: Album[]) => albums.find(a => a.Id === id))
+    //        .catch(this.handleError);
+    //}
+
     getAlbum(id: number): Observable<Album> {
-        return this.getAlbums()
-            .map((albums: Album[]) => albums.find(a => a.Id === id))
+        return this.http.get(this._settings.albumServiceWithApiUrl + id)
+            .map((response: Response) => <Album>response.json())
+            .do(data => console.log('get album (single): ' +JSON.stringify(data)))
             .catch(this.handleError);
     }
 
@@ -35,10 +63,15 @@ export class AlbumsService {
         let options = new RequestOptions({ headers: headers });
         let body = JSON.stringify(album);
 
-        return this._http
+        return this.http
             .put(`${this._settings.albumsServiceWithApiUrl}/${album.id}`, body, options)
             //.map((res: Response) => res.json())
             .catch(this.handleError);
+    }
+
+    deleteResource(resource: string) {
+        return this.http.delete(resource)
+            .map(response => <any>(<Response>response).json())
     }
 
     private handleError(error: Response) {
@@ -48,4 +81,12 @@ export class AlbumsService {
         return Observable.throw(error.json().error || 'Server error');
     }
 
+    post(data?: any, mapJson: boolean = true) {
+        if (mapJson)
+            return this.http.post(this._baseUri, data)
+                .map(response => <any>(<Response>response).json());
+        else
+            return this.http.post(this._baseUri, data);
+    }
+    
 }

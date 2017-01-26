@@ -1,0 +1,15 @@
+﻿
+    <div>
+        <div *ngIf="editing">
+            <form novalidate (ngSubmit)="onSubmit(albumForm)" [formGroup]="albumForm">
+                <input type="text" placeholder="" formControlName="label">
+                <button type="submit" [disabled]="albumForm.invalid">Save Changes</button>
+                <a class="btn btn-primary" (click)="cancel()">Cancel Changes</a>
+            </form>
+        </div>
+        <div *ngIf="!editing">
+            <div title="Click to edit" (click)="edit(value)" (focus)="edit(value);" tabindex="0" class="inline-edit">{{value}}&nbsp;</div>
+        </div>
+    </div>
+
+

@@ -1,0 +1,5 @@
+{
+    "MicrosoftAzureStorage": {
+        "stgtwscloudimages_AzureStorageConnectionString": "DefaultEndpointsProtocol=https;AccountName=stgtwscloudimages;AccountKey=7V+BZU552oCIg+9uhz4mq2gb76y6aHWzRzNqL8kFlojuQUEZGTfa7wgPjJJUP8rSNb9sNI63HG5OxVQktmfD1w=="
+    }
+}

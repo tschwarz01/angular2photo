@@ -11,13 +11,18 @@ import { CounterComponent } from './components/counter/counter.component';
 import { HelloWorldComponent } from './components/HelloWorld/helloworld.component';
 import { WeatherComponent } from './components/weather/weather.component';
 import { AlbumsComponent } from './components/Albums/albums.component';
+import { AlbumsComponent2 } from './components/Albums/albums2.component';
 import { AlbumEditComponent } from './components/Albums/album-edit.component';
+import { InlineEditComponent } from './components/shared/inline-edit.component';
+import { AlbumFilterPipe } from './components/Albums/album-filter.pipe';
 
 import { AlbumsService } from './components/services/albums.service';
 import { Configuration } from './components/services/config.service';
+import { UtilityService } from './components/services/utility.service';
+import { MembershipService } from './components/services/membership.service';
 
 @NgModule({
-    bootstrap: [ AppComponent ],
+    bootstrap: [AppComponent],
     declarations: [
         AppComponent,
         NavMenuComponent,
@@ -27,7 +32,10 @@ import { Configuration } from './components/services/config.service';
         HelloWorldComponent,
         WeatherComponent,
         AlbumsComponent,
+        AlbumsComponent2,
         AlbumEditComponent,
+        InlineEditComponent,
+        AlbumFilterPipe,
     ],
     imports: [
         UniversalModule,
@@ -38,15 +46,20 @@ import { Configuration } from './components/services/config.service';
             { path: 'fetch-data', component: FetchDataComponent },
             { path: 'hello', component: HelloWorldComponent },
             { path: 'weather', component: WeatherComponent },
-            { path: 'albums', component: AlbumsComponent },
+            { path: 'albums2', component: AlbumsComponent },
+            { path: 'albums', component: AlbumsComponent2 },
+            
             { path: 'album/:id', component: AlbumEditComponent },
             { path: '**', redirectTo: 'home' }
         ]),
         ReactiveFormsModule,
+        FormsModule,
     ],
     providers: [
         Configuration,
-        AlbumsService
+        AlbumsService,
+        UtilityService,
+        MembershipService,
     ]
 })
 export class AppModule { }

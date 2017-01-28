@@ -84,7 +84,8 @@ export class AlbumsService {
     post(data?: any, mapJson: boolean = true) {
         if (mapJson)
             return this.http.post(this._baseUri, data)
-                .map(response => <any>(<Response>response).json());
+                .map(response => <any>(<Response>response).json())
+                .do(data => console.log('albums.service post function: ' + JSON.stringify(data)));
         else
             return this.http.post(this._baseUri, data);
     }

@@ -1,17 +1,12 @@
-//import { Component } from '@angular/core';
-
-//@Component({
-//    selector: 'app',
-//    template: require('./app.component.html'),
-//    styles: [require('./app.component.css')]
-//})
-//export class AppComponent {
-//}
+//require('style-loader!css-loader!font-awesome/css/font-awesome.css?');
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { Location } from '@angular/common';
-//import 'rxjs/add/operator/map';
-//import './rxjs-operators';
 import { enableProdMode } from '@angular/core';
+
+import "rxjs/add/operator/map";
+import "rxjs/add/operator/do";
+import 'rxjs/add/observable/throw';
+import 'rxjs/add/operator/catch';
 
 enableProdMode();
 import { MembershipService } from '../services/membership.service';
@@ -28,25 +23,25 @@ export class AppComponent implements OnInit {
 
     ngOnInit() { }
 
-    //isUserLoggedIn(): boolean {
-    //    return this.membershipService.isUserAuthenticated();
-    //}
-
-    getUserName(): string {
-        //if (this.isUserLoggedIn()) {
-        //    var _user = this.membershipService.getLoggedInUser();
-        //    return _user.Username;
-        //}
-        //else
-            return 'tschwarz';
+    isUserLoggedIn(): boolean {
+        return this.membershipService.isUserAuthenticated();
     }
 
-    //logout(): void {
-    //    this.membershipService.logout()
-    //        .subscribe(res => {
-    //            localStorage.removeItem('user');
-    //        },
-    //        error => console.error('Error: ' + error),
-    //        () => { });
-    //}
+    getUserName(): string {
+        if (this.isUserLoggedIn()) {
+            var _user = this.membershipService.getLoggedInUser();
+            return _user.Username;
+        }
+        else
+            return 'Account';
+    }
+
+    logout(): void {
+        this.membershipService.logout()
+            .subscribe(res => {
+                localStorage.removeItem('user');
+            },
+            error => console.error('Error: ' + error),
+            () => { });
+    }
 }

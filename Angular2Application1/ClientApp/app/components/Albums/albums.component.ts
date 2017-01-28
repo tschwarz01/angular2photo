@@ -1,54 +1,39 @@
 ﻿import { Component, OnInit } from '@angular/core';
 
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/catch';
+import { Album } from './album';
+
+import { Paginated } from '../shared/paginated';
+import { OperationResult } from '../shared/operationResult';
 
 import { AlbumsService } from '../services/albums.service';
-import { Album } from './album';
-import { Configuration } from '../services/config.service';
-import { Paginated } from '../shared/paginated';
-
 import { UtilityService } from '../services/utility.service';
-import { OperationResult } from '../shared/operationResult';
+import { NotificationService } from '../services/notification.service';
 
 
 @Component({
     selector: 'albums',
     template: require('./albums.component.html')
 })
-
 export class AlbumsComponent extends Paginated implements OnInit {
     private _albumsAPI: string = 'api/albums/';
     private _albums: Array<Album>;
 
     pageTitle: string = 'Photo Albums';
-    albums: Album[];
     errorMessage: string;
-    listFilter: string;
 
-    displayRow: number = 0;
-
-
-    clickMessage = '';
-
-    Temp(idx) {
-        this.displayRow = idx;
-    }
-
-    constructor(private _dataService: AlbumsService,
-        private _settings: Configuration,
-        public utilityService: UtilityService) {
-        super(0, 0, 0);
+    constructor(public albumsService: AlbumsService,
+                public utilityService: UtilityService,
+                public notificationService: NotificationService) {
+                super(0, 0, 0);
     }
 
     ngOnInit() {
-        this._dataService.set(this._albumsAPI, 50);
+        this.albumsService.set(this._albumsAPI, 50);
         this.getAlbums();
-        //this.loadAlbums();
     }
 
     getAlbums(): void {
-        this._dataService.get(this._page)
+        this.albumsService.get(this._page)
             .subscribe(res => {
                 var data: any = res.json();
                 this._albums = data.Items;
@@ -74,21 +59,12 @@ export class AlbumsComponent extends Paginated implements OnInit {
         return this.utilityService.convertDateTime(date);
     }
 
-    loadAlbums() {
-        this._dataService.getAlbums()
-            .subscribe(albums => this.albums = albums,
-                        error => this.errorMessage = <any>error);
-    }
-
-    onDelete(album: Album) {
-        console.log('You are my hero!' + album.Title);
-    }
-
-    delete(album: Album) {
+    albumDelete(album: Album) {
         var _removeResult: OperationResult = new OperationResult(false, '');
 
-        
-                this._dataService.deleteResource(this._albumsAPI + 'delete/' + album.Id)
+        this.notificationService.printConfirmationDialog('Are you sure you want to delete the album?',
+            () => {
+                this.albumsService.deleteResource(this._albumsAPI + 'delete/' + album.Id)
                     .subscribe(res => {
                         _removeResult.Succeeded = res.Succeeded;
                         _removeResult.Message = res.Message;
@@ -96,40 +72,28 @@ export class AlbumsComponent extends Paginated implements OnInit {
                     error => console.error('Error: ' + error),
                     () => {
                         if (_removeResult.Succeeded) {
+                            this.notificationService.printSuccessMessage(album.Title + ' removed from gallery.');
                             console.log(album.Title + ' removed from gallery.');
                             this.getAlbums();
                         }
                         else {
+                            this.notificationService.printErrorMessage('Failed to delete photo');
                             console.log('Failed to remove photo');
                         }
                     });
-            
+            });
     }
 
-    //loadAlbums() {
-    //    this._dataService.getAlbums()
-    //        .subscribe(
-    //        data => {
-    //            this.albums = data;
-    //        });
-    //}
-
-    editableText = "Click to edit me!";
-
-    // Save name to the server here.  
-    saveEditable(value) {
-        console.log(value);
+    // Update Album 
+    albumUpdate(_savedAlbum: Album): void {
+        this.albumsService.updateAlbum(_savedAlbum).subscribe(
+            data => {
+                console.log('this is the object passed from edit back to albums.component: ' + JSON.stringify(_savedAlbum));
+                this.getAlbums();
+            },
+            error => {
+                console.error("Error saving changes");
+            }
+        );        
     }
-
-    array = ['bmw', 'benz', 'honda'];
-
-    customTrackBy(index: number): any {
-        return index;
-    }
-
-
-    onNotify(_savedAlbum: Album): void {
-        console.log('this is the object passed from edit back to albums.component: ' + JSON.stringify(_savedAlbum));
-    }
-
 }

@@ -1,10 +1,16 @@
 @{
     ViewData["Title"] = "Home Page";
 }
-
-<app asp-prerender-module="ClientApp/dist/main-server">Loading...</app>
+@section styles
+{
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/alertifyjs/1.9.0/css/alertify.min.css" />
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/alertifyjs/1.9.0/css/themes/bootstrap.min.css" />
+}
+<app @*asp-prerender-module="ClientApp/dist/main-server"*@>Loading...</app>
 
 <script src="~/dist/vendor.js" asp-append-version="true"></script>
 @section scripts {
     <script src="~/dist/main-client.js" asp-append-version="true"></script>
+    <script src="//cdn.jsdelivr.net/alertifyjs/1.9.0/alertify.min.js"></script>
+
 }

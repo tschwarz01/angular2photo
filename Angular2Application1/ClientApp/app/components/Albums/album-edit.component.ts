@@ -1,75 +1,133 @@
-﻿import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-
-import { Subscription } from 'rxjs/Subscription';
-import { Observable } from "rxjs/Observable";
-
-import { AlbumsService } from '../services/albums.service';
-import { Configuration } from '../services/config.service';
+﻿import {
+    Component,
+    Input,
+    Output,
+    ElementRef,
+    ViewChild,
+    Renderer,
+    forwardRef,
+    OnInit,
+    EventEmitter
+} from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Album } from './album';
+
+
+const INLINE_EDIT_CONTROL_VALUE_ACCESSOR = {
+    provide: NG_VALUE_ACCESSOR,
+    useExisting: forwardRef(() => AlbumEditComponent),
+    multi: true
+};
 
 @Component({
     selector: 'album-edit',
-    template: require('./album-edit.component.html')
+    template: require('./album-edit.component.html'),
+    providers: [INLINE_EDIT_CONTROL_VALUE_ACCESSOR],
+    styles: [require('./album-edit.component.css')]
 })
 
-export class AlbumEditComponent implements OnInit {
-    pageTitle: string = 'Album Details';
-    albumFG: FormGroup;
-    albums: Album;
-    _albumId: number;
-    errorMessage: string;
-    private sub: Subscription;
+export class AlbumEditComponent implements ControlValueAccessor, OnInit {
 
-    constructor(private _route: ActivatedRoute,
-        private _router: Router,
-        private _albumService: AlbumsService,
-        private _settings: Configuration,
-        private fb: FormBuilder) {        
+    @ViewChild('AlbumEditControl') inlineEditControl: ElementRef; // input DOM element
+    @Input() album: Album;
+    @Input() label: string = '';  // Label value for input element
+    @Input() type: string = 'text'; // The type of input element
+    @Input() required: boolean = false; // Is input requried?
+    @Input() disabled: boolean = false; // Is input disabled?
+    private _value: string = ''; // Private variable for input value
+    private preValue: string = ''; // The value before clicking to edit
+    private editing: boolean = false; // Is Component in edit mode?
+    public onChange: any = Function.prototype; // Trascend the onChange event
+    public onTouched: any = Function.prototype; // Trascend the onTouch event
+    albumForm: FormGroup;
+    @Output() submitUpdate: EventEmitter<Album> = new EventEmitter<Album>();
+    @Output() submitDelete: EventEmitter<Album> = new EventEmitter<Album>();
+
+    constructor(element: ElementRef, private _renderer: Renderer, private fb: FormBuilder) {
     }
 
-    ngOnInit(): void {
-        this.sub = this._route.params.subscribe(
-            params => {
-                let id = +params['id'];
-                this._albumId = id;
-                this.getAlbum(id);
-                //console.log('this is the album id within ngOnInit in album-edit ' + id);
-            });
+    ngOnInit() {
 
-        this.albumFG = this.fb.group({
-            id: [this._albumId],
-            title: ['', [Validators.required, Validators.minLength(2)]],
-            description: ['', [Validators.required, Validators.minLength(10)]]
+        this.albumForm = this.fb.group({
+            id: [this.album.Id],
+            title: [this.album.Title, [Validators.required, Validators.minLength(2)]],
+            description: [this.album.Description, [Validators.required, Validators.minLength(10)]]
         });
+
     };
 
     onSubmit({ value, valid }: { value: Album, valid: boolean }) {
         console.log(value, valid);
-
-        this._albumService.updateAlbum(value).subscribe(
-            data => {
-                this._router.navigate(['albums']);
-            },
-            error => {
-                console.error("Error saving changes");
-                return Observable.throw(error);
-            }
-        );
+        this.submitUpdate.emit(value);
+        this.editing = false;              
     }
+
+    cancel() {
+        this.albumForm.get('title').setValue(this.album.Title);
+        this.albumForm.get('description').setValue(this.album.Description);
+        this.editing = false;
+    }
+
+    // Start the editting process for the input element
+    edit() {
+        if (this.disabled) {
+            return;
+        }
+
+        this.editing = true;
+    }
+
+    // Start the editting process for the input element
+    delete(album: Album) {
+        if (this.disabled) {
+            return;
+        }
+
+        this.submitDelete.emit(album);
+        console.log('this album will now be deleted: ' + JSON.stringify(album.Title));
+
+        // add delete logic
+    }
+
+
+    // Control Value Accessors for ngModel
+    get value(): any {
+        return this._value;
+    }
+
+    set value(v: any) {
+        if (v !== this._value) {
+            this._value = v;
+            this.onChange(v);
+        }
+    }
+
     
-    ngOnDestroy() {
-        this.sub.unsubscribe();
+
+    // Required for ControlValueAccessor interface
+    writeValue(value: any) {
+        this._value = value;
     }
 
-    getAlbum(id: number) {
-        this._albumService.getAlbum(id).subscribe(
-            albums => this.albums = albums,
-            error => this.errorMessage = <any>error);
+    // Required forControlValueAccessor interface
+    public registerOnChange(fn: (_: any) => {}): void {
+        this.onChange = fn;
     }
 
-    onBack(): void {
-        this._router.navigate(['/albums']);
+    // Required forControlValueAccessor interface
+    public registerOnTouched(fn: () => {}): void {
+        this.onTouched = fn;
     }
+
+    // Do stuff when the input element loses focus
+    onBlur($event: Event) {
+        this.editing = false;
+    }
+
+    convertDateTime(date: Date) {
+        var _formattedDate = new Date(date.toString());
+        return _formattedDate.toDateString();
+    }
+
+    
 }

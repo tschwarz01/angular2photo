@@ -16,6 +16,8 @@ using Microsoft.EntityFrameworkCore;
 using Angular2Application1.Infrastructure.Mappings;
 using Angular2Application1.ViewModels;
 using Angular2Application1.Entities;
+using Angular2Application1.Infrastructure.Services;
+using System.Security.Claims;
 
 namespace Angular2Application1
 {
@@ -43,7 +45,6 @@ namespace Angular2Application1
 
         public IConfigurationRoot Configuration { get; set; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             //  Connection String to photogallery db
@@ -56,9 +57,30 @@ namespace Angular2Application1
             services.AddDbContext<PhotoGalleryContext>(options =>
                 options.UseSqlServer(sqlConnectionString));
 
+            // Repositories
             services.AddScoped<IPhotoRepository, PhotoRepository>();
             services.AddScoped<IAlbumRepository, AlbumRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUserRoleRepository, UserRoleRepository>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<ILoggingRepository, LoggingRepository>();
+
+            // Services
+            services.AddScoped<IMembershipService, MembershipService>();
+            services.AddScoped<IEncryptionService, EncryptionService>();
+
+            services.AddAuthentication();
+
+            // Polices
+            services.AddAuthorization(options =>
+            {
+                // inline policies
+                options.AddPolicy("AdminOnly", policy =>
+                {
+                    policy.RequireClaim(ClaimTypes.Role, "Admin");
+                });
+
+            });
 
             // Add framework services.
             services.AddMvc()
@@ -94,11 +116,11 @@ namespace Angular2Application1
 
             app.UseStaticFiles();
 
-            //app.UseCookieAuthentication(new CookieAuthenticationOptions
-            //{
-            //    AutomaticAuthenticate = true,
-            //    AutomaticChallenge = true
-            //});
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true
+            });
 
             AutoMapper.Mapper.Initialize(cfg =>
             {

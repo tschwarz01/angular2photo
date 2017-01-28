@@ -41,35 +41,37 @@ namespace Angular2Application1.Controllers
             baseAlbumPath = Path.Combine(_env.WebRootPath, "images");
         }
 
-        [HttpGet("GetAll")]
-        public IActionResult GetAll()
-        {
-            var _albums = _albumRepository.GetAll();
-            if (_albums == null)
-            {
-                return NotFound();
-            }
-            var results = Mapper.Map<IEnumerable<AlbumViewModel>>(_albums);
+        //[Authorize(Policy = "AdminOnly")]
+        //[HttpGet("GetAll")]
+        //public IActionResult GetAll()
+        //{
+        //    var _albums = _albumRepository.GetAll();
+        //    if (_albums == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    var results = Mapper.Map<IEnumerable<AlbumViewModel>>(_albums);
 
-            return Ok(results);
-        }
+        //    return Ok(results);
+        //}
 
-        [HttpGet("GetOne/{id}")]
-        public IActionResult GetOne(int id)
-        {
-            //Album _album = _albumRepository.GetSingle(a => a.Id == id, a => a.Photos);
-            Album _album = _albumRepository.GetSingle(a => a.Id == id, a => a.Photos);
-            if (_album == null)
-            {
-                return NotFound();
-            }
+        //[Authorize(Policy = "AdminOnly")]
+        //[HttpGet("GetOne/{id}")]
+        //public IActionResult GetOne(int id)
+        //{
+        //    //Album _album = _albumRepository.GetSingle(a => a.Id == id, a => a.Photos);
+        //    Album _album = _albumRepository.GetSingle(a => a.Id == id, a => a.Photos);
+        //    if (_album == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            AlbumViewModel _albumVM = Mapper.Map<Album, AlbumViewModel>(_album);
-            return Ok(_albumVM);
-        }
+        //    AlbumViewModel _albumVM = Mapper.Map<Album, AlbumViewModel>(_album);
+        //    return Ok(_albumVM);
+        //}
 
 
-
+        [Authorize(Policy = "AdminOnly")]
         [HttpGet("{page:int=0}/{pageSize=12}")]
         public async Task<IActionResult> Get(int? page, int? pageSize)
         {
@@ -77,8 +79,8 @@ namespace Angular2Application1.Controllers
 
             try
             {
-                //if (await _authorizationService.AuthorizeAsync(User, "AdminOnly"))
-                //{
+                if (await _authorizationService.AuthorizeAsync(User, "AdminOnly"))
+                {
                     int currentPage = page.Value;
                     int currentPageSize = pageSize.Value;
 
@@ -104,12 +106,12 @@ namespace Angular2Application1.Controllers
                         TotalPages = (int)Math.Ceiling((decimal)_totalAlbums / currentPageSize),
                         Items = _albumsVM
                     };
-                //}
-                //else
-                //{
-                //    CodeResultStatus _codeResult = new CodeResultStatus(401);
-                //    return new ObjectResult(_codeResult);
-                //}
+                }
+                else
+                {
+                    CodeResultStatus _codeResult = new CodeResultStatus(401);
+                    return new ObjectResult(_codeResult);
+                }
             }
             catch (Exception ex)
             {
@@ -120,39 +122,63 @@ namespace Angular2Application1.Controllers
             return new ObjectResult(pagedSet);
         }
 
-
+        [Authorize(Policy = "AdminOnly")]
         [HttpPut("{id}")]
-        public IActionResult EditAlbum(int id, [FromBody] UpdateAlbumViewModel vm)
+        public async Task<IActionResult> EditAlbum(int id, [FromBody] UpdateAlbumViewModel vm)
         {
-            //Album _album = _albumRepository.GetSingle(vm.Id);
+            IActionResult _result = new ObjectResult(false);
+            GenericResult _editResult = null;
 
-            if (vm == null)
+            try
             {
-                return BadRequest();
-            }
+                if (await _authorizationService.AuthorizeAsync(User, "AdminOnly"))
+                {
+
+                    if (vm == null)
+                    {
+                        return BadRequest();
+                    }
 
 
-            var _album = _albumRepository.GetSingle(vm.Id);
+                    var _album = _albumRepository.GetSingle(vm.Id);
             
-            if (_album == null)
+                    if (_album == null)
+                    {
+                        return NotFound();
+                    }
+
+                    _album.Title = vm.Title;
+                    _album.Description = vm.Description;
+                    _albumRepository.Edit(_album);
+                    _albumRepository.Commit();
+
+                }
+                else
+                {
+                    CodeResultStatus _codeResult = new CodeResultStatus(401);
+                    return new ObjectResult(_codeResult);
+                }
+            }
+            catch (Exception ex)
             {
-                return NotFound();
+                _editResult = new GenericResult()
+                {
+                    Succeeded = false,
+                    Message = ex.Message
+                };
+
+                _loggingRepository.Add(new Error() { Message = ex.Message, StackTrace = ex.StackTrace, DateCreated = DateTime.Now });
+                _loggingRepository.Commit();
             }
 
-            _album.Title = vm.Title;
-            _album.Description = vm.Description;
-            _albumRepository.Edit(_album);
-            _albumRepository.Commit();
-
-
-            return NoContent();
-
+            _result = new ObjectResult(_editResult);
+            return _result;
 
         }
 
 
 
-        //[Authorize(Policy = "AdminOnly")]
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost("Create")]
         public async Task<IActionResult> CreateAlbum([FromBody] CreateAlbumViewModel vm)
         {
@@ -161,8 +187,8 @@ namespace Angular2Application1.Controllers
 
             try
             {
-                //if (await _authorizationService.AuthorizeAsync(User, "AdminOnly"))
-                //{
+                if (await _authorizationService.AuthorizeAsync(User, "AdminOnly"))
+                {
 
                     if (vm == null)
                     {
@@ -185,9 +211,9 @@ namespace Angular2Application1.Controllers
                     }
 
                     // To Do - Add Exception Handling
-                    if (!Directory.Exists(Path.Combine(baseAlbumPath, vm.Title)))
+                    if (!Directory.Exists(Path.Combine(baseAlbumPath, vm.SafeName)))
                     {
-                        Directory.CreateDirectory(Path.Combine(baseAlbumPath, vm.Title));
+                        Directory.CreateDirectory(Path.Combine(baseAlbumPath, vm.SafeName));
                     }
 
                     var newAlbum = Mapper.Map<Album>(vm);
@@ -204,12 +230,12 @@ namespace Angular2Application1.Controllers
                         };
                     }
 
-                //}
-                //else
-                //{
-                //    CodeResultStatus _codeResult = new CodeResultStatus(401);
-                //    return new ObjectResult(_codeResult);
-                //}
+                }
+                else
+                {
+                    CodeResultStatus _codeResult = new CodeResultStatus(401);
+                    return new ObjectResult(_codeResult);
+                }
             }
             catch (Exception ex)
             {
@@ -227,7 +253,7 @@ namespace Angular2Application1.Controllers
             return _result;
         }
 
-        //[Authorize(Policy = "AdminOnly")]
+        [Authorize(Policy = "AdminOnly")]
         [HttpDelete("Delete/{id:int}")]
         public async Task<IActionResult> DeleteAlbum(int id)
         {
@@ -236,33 +262,40 @@ namespace Angular2Application1.Controllers
 
             try
             {
-                Album _album = _albumRepository.GetSingle(id);
-
-                if (_album == null)
+                if (await _authorizationService.AuthorizeAsync(User, "AdminOnly"))
                 {
-                    return NotFound();
-                }
-                //if (await _authorizationService.AuthorizeAsync(User, "AdminOnly"))
-                //{
-                Album _albumToRemove = this._albumRepository.GetSingle(id);
-                this._albumRepository.Delete(_albumToRemove);
+                    Album _album = _albumRepository.GetSingle(id);
 
-                if (await _albumRepository.SaveChangesAsync())
-                {
-                    _removeResult = new GenericResult()
+                    if (_album == null)
                     {
-                        Succeeded = true,
-                        Message = $"Album removed: {_albumToRemove.Title}"
-                    };
-                }
+                        return NotFound();
+                    }
 
                 
-                //}
-                //else
-                //{
-                //    CodeResultStatus _codeResult = new CodeResultStatus(401);
-                //    return new ObjectResult(_codeResult);
-                //}
+                    Album _albumToRemove = this._albumRepository.GetSingle(id);
+                    this._albumRepository.Delete(_albumToRemove);
+
+                    if (await _albumRepository.SaveChangesAsync())
+                    {
+                        _removeResult = new GenericResult()
+                        {
+                            Succeeded = true,
+                            Message = $"Album removed: {_albumToRemove.Title}"
+                        };
+                    }
+
+                    // To Do - Add Exception Handling
+                    if (Directory.Exists(Path.Combine(baseAlbumPath, _album.SafeName)))
+                    {
+                        Directory.Delete(Path.Combine(baseAlbumPath, _album.SafeName));
+                    }
+
+                }
+                else
+                {
+                    CodeResultStatus _codeResult = new CodeResultStatus(401);
+                    return new ObjectResult(_codeResult);
+                }
             }
             catch (Exception ex)
             {
@@ -280,7 +313,7 @@ namespace Angular2Application1.Controllers
             return _result;
         }
 
-        //[Authorize(Policy = "AdminOnly")]
+        [Authorize(Policy = "AdminOnly")]
         [HttpGet("{id:int}/photos/{page:int=0}/{pageSize=12}")]
         public PaginationSet<PhotoViewModel> Get(int id, int? page, int? pageSize)
         {

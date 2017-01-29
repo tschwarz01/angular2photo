@@ -1,9 +1,14 @@
+import 'jquery';
 import 'angular2-universal-polyfills/browser';
 import { enableProdMode } from '@angular/core';
 import { platformUniversalDynamic } from 'angular2-universal';
 import { AppModule } from './app/app.module';
 import 'bootstrap';
-import 'font-awesome/css/font-awesome.css'
+import 'fancybox/dist/js/jquery.fancybox.pack.js';
+import 'fancybox/dist/css/jquery.fancybox.css';
+import 'font-awesome/css/font-awesome.css';
+import 'alertifyjs';
+import "./dist/js/mysite.js";
 
 // Enable either Hot Module Reloading or production mode
 if (module['hot']) {

@@ -1,16 +1,29 @@
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Photo Gallery @ tws.cloud";
 }
 @section styles
 {
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/alertifyjs/1.9.0/css/alertify.min.css" />
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/alertifyjs/1.9.0/css/themes/bootstrap.min.css" />
+    @*<link rel="stylesheet" href="//cdn.jsdelivr.net/alertifyjs/1.9.0/css/alertify.min.css" />
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/alertifyjs/1.9.0/css/themes/bootstrap.min.css" />*@
 }
 <app @*asp-prerender-module="ClientApp/dist/main-server"*@>Loading...</app>
 
-<script src="~/dist/vendor.js" asp-append-version="true"></script>
-@section scripts {
-    <script src="~/dist/main-client.js" asp-append-version="true"></script>
-    <script src="//cdn.jsdelivr.net/alertifyjs/1.9.0/alertify.min.js"></script>
 
+@section scripts {
+    <script src="~/dist/vendor.js" asp-append-version="true"></script>
+    <script src="~/dist/main-client.js" asp-append-version="true"></script>
+    
+    @*<script src="//cdn.jsdelivr.net/alertifyjs/1.9.0/alertify.min.js"></script>*@
+
+}
+
+@section customScript
+{
+    @*$(document).ready(function() {
+        $('.fancybox').fancybox();
+    });*@
+
+    @*$(document).ready(function() {
+    $.fancybox.open($('.fancybox'));*@
+});
 }

@@ -7,6 +7,10 @@ import "rxjs/add/operator/map";
 import "rxjs/add/operator/do";
 import 'rxjs/add/observable/throw';
 import 'rxjs/add/operator/catch';
+import 'fancybox';
+//import 'fancybox/dist/js/jquery.fancybox.pack.js';
+//import 'fancybox/dist/css/jquery.fancybox.css';
+
 
 enableProdMode();
 import { MembershipService } from '../services/membership.service';

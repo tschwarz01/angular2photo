@@ -72,6 +72,12 @@ var clientBundleConfig = merge(sharedConfig, {
         new webpack.DllReferencePlugin({
             context: __dirname,
             manifest: require('./wwwroot/dist/vendor-manifest.json')
+        }),
+        new webpack.ProvidePlugin({
+            $: "jquery",
+            jQuery: "jquery",
+            jquery: "jquery",
+            "window.jQuery": "jquery"
         })
     ].concat(isDevBuild ? [] : [
         // Plugins that apply in production builds only

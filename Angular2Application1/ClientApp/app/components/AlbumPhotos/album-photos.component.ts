@@ -7,6 +7,11 @@ import { UtilityService } from '../services/utility.service';
 import { NotificationService } from '../services/notification.service';
 import { OperationResult } from '../shared/operationResult';
 import { Subscription } from 'rxjs/Subscription';
+//import 'fancybox';
+//import 'jquery';
+//import 'fancybox/dist/js/jquery.fancybox.pack.js';
+//import 'fancybox/dist/css/jquery.fancybox.css';
+//import "../../../dist/js/mysite.js";
 
 @Component({
     selector: 'album-photo',

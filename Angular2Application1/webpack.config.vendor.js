@@ -11,6 +11,7 @@ module.exports = {
     module: {
         loaders: [
             { test: /\.(png|woff|woff2|eot|ttf|svg)(\?|$)/, loader: 'url-loader?limit=100000' },
+            { test: /\.(jpe?g|gif|ico)$/, loader: 'file-loader?name=assets/[name].[hash].[ext]' },
             { test: /\.css(\?|$)/, loader: extractCSS.extract(['css']) }
         ]
     },
@@ -29,6 +30,11 @@ module.exports = {
             'bootstrap',
             'bootstrap/dist/css/bootstrap.css',
             'font-awesome/css/font-awesome.css',
+            'fancybox',
+            'fancybox/dist/css/jquery.fancybox.css',
+            'alertifyjs/build/css/alertify.min.css',
+            'alertifyjs/build/css/themes/bootstrap.min.css',
+            'alertifyjs/build/alertify.min.js',
             'es6-shim',
             'es6-promise',
             'jquery',
@@ -42,7 +48,12 @@ module.exports = {
     },
     plugins: [
         extractCSS,
-        new webpack.ProvidePlugin({ $: 'jquery', jQuery: 'jquery' }), // Maps these identifiers to the jQuery package (because Bootstrap expects it to be a global variable)
+        new webpack.ProvidePlugin({
+            $: "jquery",
+            jQuery: "jquery",
+            jquery: 'jquery',
+            "window.jQuery": "jquery"
+        }), // Maps these identifiers to the jQuery package (because Bootstrap expects it to be a global variable)
         new webpack.optimize.OccurenceOrderPlugin(),
         new webpack.DllPlugin({
             path: path.join(__dirname, 'wwwroot', 'dist', '[name]-manifest.json'),

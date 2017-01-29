@@ -16,8 +16,9 @@
     <!-- /.row -->
     <div class="row album-box col-md-12" *ngFor="let album of _albums">
         <div class="col-md-1 text-center">
+            <p><i class="fa fa-camera fa-4x"></i></p>
             <p>{{convertDateTime(album.DateCreated)}}</p>
-            <p><a class="btn btn-primary" [routerLink]="['/albums/:id/photos', {id: album.Id}]">&nbsp;&nbsp;View&nbsp;</a></p>
+            <p><a class="btn btn-primary" [routerLink]="['/albums/:id/photos', {id: album.Id}]">&nbsp;&nbsp;View&nbsp;<i class="fa fa-angle-right"></i></a></p>
 
         </div>
         <div class="col-md-5">
